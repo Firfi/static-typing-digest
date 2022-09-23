@@ -115,7 +115,7 @@ const handleUserNodesClassic = ({ id }: UserNodeClassic) => {
 
 // Newtype is like enums but work with an infinite amount of values [and also not with only strings]
 
-type Newtype<T, U> = T & {__TYPE__: U};
+export type Newtype<T, U> = T & {__TYPE__: U};
 
 type UserId = Newtype<string, 'UserId'>;
 type UserNodeId = Newtype<string, 'UserNodeId'>;
@@ -233,3 +233,61 @@ const b = x * y;
 
 // still, won't compile
 // game.makeTurn('X', x + y, y + x);
+
+// Bonus: function arguments examples. Tangentially related to the above
+
+type DbRepository = {
+  // ...
+}
+
+enum PaymentProvider {
+  STRIPE = 'stripe',
+  PAYPAL = 'paypal',
+}
+
+type PaymentMethodId = Newtype<string, 'PaymentMethodId'>;
+// we already have it defined
+// type UserId = Newtype<string, 'UserId'>;
+
+// tiers
+
+// fixed with named args in some languages, but not in TS (not that it actually needs to be fixed)
+const setPaymentInfoTierOMG = (repository: DbRepository, paymentProvider: string, paymentMethodId: string, userId: string) => {
+  // ...
+}
+
+// often you get "named args" semantics just by having uniq type for each one
+// it's impossible to mess with the args then
+// but a long list of args still isn't great
+const setPaymentInfoTier3 = (repository: DbRepository, paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId, userId: UserId) => {
+  // ...
+}
+
+// kind of a named args
+const setPaymentInfoTier2 = (args: {
+  repository: DbRepository;
+  paymentProvider: PaymentProvider;
+  paymentMethodId: PaymentMethodId;
+  userId: UserId;
+}) => {
+  // ...
+}
+
+const setPaymentInfoTier1 = (repository: DbRepository, paymentMethodCompositeKey: { paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId }, userId: UserId) => {
+  // ...
+}
+
+// dependency injection
+// what we really often have is that the args can be sorted from more general to more specific, and vice versa
+const setPaymentInfoTier0 =
+  (repository: DbRepository) =>
+    (userId: UserId) =>
+      (paymentMethodCompositeKey: { paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId }) => {
+        // ...
+      }
+
+const setUserPaymentInfo = setPaymentInfoTier0({} as DbRepository);
+const setBobbertPaymentInfo = setUserPaymentInfo('bobbert' as UserId);
+
+// the trick is these two (paymentProvider and paymentMethodId) are always used together
+setBobbertPaymentInfo({ paymentProvider: PaymentProvider.STRIPE, paymentMethodId: 'stripe11111' as PaymentMethodId });
