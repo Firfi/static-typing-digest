@@ -1,0 +1,11 @@
+{
+  "name": "static-typing-digest",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Firfi/static-typing-digest.git",
+  "author": "Igor Loskutov <igor.loskutoff@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}
