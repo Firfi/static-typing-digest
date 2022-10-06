@@ -13,7 +13,7 @@ type NodeMetaMapping = {
   blog: {
     title: string;
   },
-  // warning! some extra exhaustiveness checks needed, but we won't go into it here
+  // warning! some extra exhaustiveness checks needed and can be done, but we won't go into it here
   someOtherType: {
     someOtherField: string;
   }
@@ -61,7 +61,9 @@ handleBlogNode(blogNode);
 // fail
 // handleBlogNode(userNode);
 
-// below advanced things, probably skip
+// ------------------------ BONUS --------------------------
+
+// probably skip
 
 const handleNode = (node: Node<NodeType>) => {
   switch (node.type) {

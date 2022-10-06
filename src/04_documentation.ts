@@ -2,7 +2,7 @@ import { Node, NodeType } from './03_generics';
 
 type EdgeType = 'subscription' | 'admin' | 'payout';
 
-// one - to - one
+// one - to - one here for simplicity
 // can be (and should be) one - to - many
 // can be (and should be) runtime configurable
 type NodeRelations = {
@@ -19,7 +19,11 @@ type NodeRelation<T extends NodeType, E extends keyof NodeRelations[T]> = NodeRe
 
 const db: [Node<NodeType>, EdgeType, Node<NodeType>][] = [];
 
-const initEdge = <T extends NodeType, E extends keyof NodeRelations[T] & EdgeType, T2 extends NodeRelations[T][E] & NodeType>(from: Node<T>, type: E, to: Node<T2>) => {
+const initEdge = <
+  T extends NodeType,
+  E extends keyof NodeRelations[T] & EdgeType,
+  T2 extends NodeRelations[T][E] & NodeType
+>(from: Node<T>, type: E, to: Node<T2>) => {
   db[db.length] = [from, type, to];
 };
 
@@ -73,7 +77,8 @@ initEdge({
   }
 });
 
-// note that here we should actually have an api with initEdge(NodeId<...>, EdgeType, NodeId<...>)
+// note that here we should actually have an api with
+// initEdge(NodeId<...>, EdgeType, NodeId<...>)
 // but I don't want to go into Id type parametrisation for the sake of example
 
 // one-to-many
@@ -88,7 +93,11 @@ type NodeRelationsOtM = {
 };
 
 // there's a price: we have to help it with types a lot on advanced use cases
-const initEdgeOtM = <T extends NodeType, E extends keyof NodeRelationsOtM[T] & EdgeType, T2 extends (NodeRelationsOtM[T][E] & NodeType[])[number] & NodeType>(from: Node<T>, type: E, to: Node<T2>) => {
+const initEdgeOtM = <
+  T extends NodeType,
+  E extends keyof NodeRelationsOtM[T] & EdgeType,
+  T2 extends (NodeRelationsOtM[T][E] & NodeType[])[number] & NodeType
+>(from: Node<T>, type: E, to: Node<T2>) => {
   db[db.length] = [from, type, to];
 };
 
@@ -131,7 +140,7 @@ const nodeRelationsOtM: NodeRelationsOtM = {
   }
 };
 
-// ^ note! boilerplate is not "repeating ourselves"
+// ^ note! boilerplate but not "repeating ourselves" because inconsistencies are checked
 
 const assertDbChecks = () => {
   const tuples = Object.entries(nodeRelationsOtM).flatMap(
@@ -146,10 +155,12 @@ const assertDbChecks = () => {
 // run:
 // assertDbChecks();
 
+// now we can:
 const validateApiCall = (/*...*/) => {
   // validate against nodeRelationsOtM
 };
 
+// and:
 const generateJsonSchema = (/*...*/) => {
   // transform nodeRelationsOtM
 };
@@ -168,7 +179,11 @@ const nodeRelationsOtMRuntime = {
 type NodeRelationsOtMRuntime = typeof nodeRelationsOtMRuntime;
 
 // the incurred price is still the same
-const initEdgeOtMRuntime = <T extends NodeType, E extends keyof NodeRelationsOtMRuntime[T] & EdgeType, T2 extends (NodeRelationsOtMRuntime[T][E] & NodeType[])[number] & NodeType>(from: Node<T>, type: E, to: Node<T2>) => {
+const initEdgeOtMRuntime = <
+  T extends NodeType,
+  E extends keyof NodeRelationsOtMRuntime[T] & EdgeType,
+  T2 extends (NodeRelationsOtMRuntime[T][E] & NodeType[])[number] & NodeType
+>(from: Node<T>, type: E, to: Node<T2>) => {
   db[db.length] = [from, type, to];
 };
 

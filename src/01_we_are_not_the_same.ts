@@ -110,16 +110,17 @@ const customerIdClassic = 'stripe11111';
 type UserNodeClassic = {
   id: string;
 }
-const handleUserNodesClassic = ({ id }: UserNodeClassic) => {
+
+const handleUserNodeClassic = ({ id }: UserNodeClassic) => {
   // at this point, it's easy to miss this naming error; probably should be nodeId or userNodeId
   // but we also have to remember a lot of context: that this is `user::fb11111` and not `fb11111`
   // and, if we also work on a payments-related tasks, that it is not `stripe11111` either
-  const userId = id;
+  const userId = id; // is it user id? or user node id?
 }
 
 // Newtype is like enums but work with an infinite amount of values [and also not with only strings]
 
-export type Newtype<T, U> = T & {__TYPE__: U};
+export type Newtype<T, U> = T & {__TYPE__: U}; // __TYPE__ key is arbitrary
 
 type UserId = Newtype<string, 'UserId'>;
 type UserNodeId = Newtype<string, 'UserNodeId'>;
@@ -133,7 +134,7 @@ type UserNode = {
   id: UserNodeId;
 }
 
-const handleUserNodes = ({ id }: UserNode) => {
+const handleUserNode = ({ id }: UserNode) => {
   // - we see an issue with naming here more clearly
   // - we don't have to remember what kind of id it is; we know it's an ID the graph database uses
   // const userId: UserNodeId = id;
@@ -154,7 +155,7 @@ const handleUserNodes = ({ id }: UserNode) => {
 
 // -----
 
-// Newtype with ints
+// Newtype with numbers
 
 // module to hide contextual types
 module GameModule {
@@ -164,7 +165,7 @@ module GameModule {
   export type Y = Newtype<number, 'Y'>;
 
   // note that player `X` looks like `X` coordinate;
-  // it is what it is, we can't call it differently without losing the meainig
+  // it is what it is, we can't call it differently without losing the meaning
   // but we also can't make a mistake because type system won't let us
   type Player = 'X' | 'O'; // kind of a enum here; called a literal type in TS
   type Place = Player | undefined;
@@ -193,6 +194,9 @@ module GameModule {
     }
 
     #setCell(x: X, y: Y, player: Player) {
+      // not possible:
+      // this.#field[x][x] = player;
+      // this.#field[x][y] = player;
       this.#field[y][x] = player;
     }
 
@@ -237,6 +241,9 @@ const b = x * y;
 
 // still, won't compile
 // game.makeTurn('X', x + y, y + x);
+// game.makeTurn('X', x * y, y * x);
+
+// ------------------- BONUS -----------------------
 
 // Bonus: function arguments examples. Tangentially related to the above
 
@@ -256,14 +263,22 @@ type PaymentMethodId = Newtype<string, 'PaymentMethodId'>;
 // tiers
 
 // fixed with named args in some languages, but not in TS (not that it actually needs to be fixed)
-const setPaymentInfoTierOMG = (repository: DbRepository, paymentProvider: string, paymentMethodId: string, userId: string) => {
+const setPaymentInfoTierOMG = (repository: DbRepository,
+                               paymentProvider: string,
+                               paymentMethodId: string,
+                               userId: string
+) => {
   // ...
 }
 
 // often you get "named args" semantics just by having uniq type for each one
 // it's impossible to mess with the args then
 // but a long list of args still isn't great
-const setPaymentInfoTier3 = (repository: DbRepository, paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId, userId: UserId) => {
+const setPaymentInfoTier3 = (repository: DbRepository,
+                             paymentProvider: PaymentProvider,
+                             paymentMethodId: PaymentMethodId,
+                             userId: UserId
+) => {
   // ...
 }
 
@@ -277,16 +292,26 @@ const setPaymentInfoTier2 = (args: {
   // ...
 }
 
-const setPaymentInfoTier1 = (repository: DbRepository, paymentMethodCompositeKey: { paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId }, userId: UserId) => {
+const setPaymentInfoTier1 = (repository: DbRepository,
+                             paymentMethodCompositeKey: {
+                               paymentProvider: PaymentProvider,
+                               paymentMethodId: PaymentMethodId
+                             },
+                             userId: UserId
+) => {
   // ...
 }
 
 // dependency injection
-// what we really often have is that the args can be sorted from more general to more specific, and vice versa
+// what we really often have is that the args can be sorted from more general to more specific,
+// and vice versa
 const setPaymentInfoTier0 =
   (repository: DbRepository) =>
     (userId: UserId) =>
-      (paymentMethodCompositeKey: { paymentProvider: PaymentProvider, paymentMethodId: PaymentMethodId }) => {
+      (paymentMethodCompositeKey: {
+        paymentProvider: PaymentProvider,
+        paymentMethodId: PaymentMethodId
+      }) => {
         // ...
       }
 
@@ -294,4 +319,7 @@ const setUserPaymentInfo = setPaymentInfoTier0({} as DbRepository);
 const setBobbertPaymentInfo = setUserPaymentInfo('bobbert' as UserId);
 
 // the trick is these two (paymentProvider and paymentMethodId) are always used together
-setBobbertPaymentInfo({ paymentProvider: PaymentProvider.STRIPE, paymentMethodId: 'stripe11111' as PaymentMethodId });
+setBobbertPaymentInfo({
+  paymentProvider: PaymentProvider.STRIPE,
+  paymentMethodId: 'stripe11111' as PaymentMethodId
+});

@@ -10,6 +10,7 @@ const blogUpdateParser = z.object({
 
 const blogIdParser = z.string().refine(looksLikeBlogId)
 
+// composable
 const blogParser = z.object({
   id: blogIdParser,
 }).merge(blogUpdateParser);

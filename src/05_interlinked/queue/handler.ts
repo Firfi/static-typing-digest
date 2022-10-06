@@ -5,7 +5,7 @@ const event = {amount: 100, currency: 'USD' as Currency, payerId: 'payer1' as Us
 
 const enhanceEventWithPayee = (e: typeof event) => ({
   ...e,
-  payeeId: 'payee1' as BlogId
+  payeeId: 'payee1' as BlogId,
 });
 
 const run = () => {
