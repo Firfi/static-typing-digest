@@ -1,5 +1,9 @@
+
+// subscription statuses
 const subscriptionStatusClassic = 'active';
 const subscriptionStatusInactiveClassic = 'inactive';
+
+// user statuses
 const userStatusClassic = 'active';
 const userStatusBannedClassic = 'banned';
 
